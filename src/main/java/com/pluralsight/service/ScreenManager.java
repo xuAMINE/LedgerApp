@@ -14,7 +14,7 @@ public class ScreenManager {
     private final HomeView homeView = new HomeView();
     private final LedgerView ledgerView = new LedgerView();
     private final TransactionBuilder transactionBuilder = new TransactionBuilder();
-    private final LedgerServiceImpl service = new LedgerServiceImpl(new CSVTransactionRepository());
+    private final LedgerServiceImpl ledgerService = new LedgerServiceImpl(new CSVTransactionRepository());
     private final TransactionRepository transactionRepository = new CSVTransactionRepository();
 
 
@@ -31,7 +31,7 @@ public class ScreenManager {
                     String vendor = homeView.promptForVendor();
                     BigDecimal amount = new BigDecimal(homeView.promptForAmount());
                     Transaction transaction = transactionBuilder.buildTransaction(description, vendor, amount);
-                    service.addDeposit(transaction);
+                    ledgerService.addDeposit(transaction);
                     break;
                 case "P":
                     homeView.promptForPayment();
@@ -39,7 +39,7 @@ public class ScreenManager {
                     String vendor1 = homeView.promptForVendor();
                     BigDecimal amount1 = new BigDecimal(homeView.promptForAmount());
                     Transaction transaction1 = transactionBuilder.buildTransaction(description1, vendor1, amount1);
-                    service.makePayment(transaction1);
+                    ledgerService.makePayment(transaction1);
                     break;
                 case "L":
                     handleLedgerMenu();
@@ -68,17 +68,17 @@ public class ScreenManager {
 //                    ledgerView.displayBalance(service.getCurrentBalance());
                     break;
                 case "D":
-                    List<Transaction> deposits = service.getDeposits();
+                    List<Transaction> deposits = ledgerService.getDeposits();
                     ledgerView.displayTransactions(deposits);
 //                    ledgerView.displayBalance(service.getCurrentBalance());
                     break;
                 case "P":
-                    List<Transaction> payments = service.getPayments();
+                    List<Transaction> payments = ledgerService.getPayments();
                     ledgerView.displayTransactions(payments);
 //                    ledgerView.displayBalance(service.getCurrentBalance());
                     break;
                 case "R":
-                    ledgerView.displayReportMenu();
+                    handleReportMenu();
                     break;
                 case "H":
                     return; // ⬅️ Return to Home Menu
@@ -96,6 +96,31 @@ public class ScreenManager {
 
             switch (choice) {
                 case "1":
+                    List<Transaction> monthTransactions = ledgerService.getMonthToDateTransactions();
+                    ledgerView.displayTransactions(monthTransactions);
+                    break;
+                case "2":
+                    List<Transaction> prevMonthTransaction = ledgerService.getPreviousMonthTransactions();
+                    ledgerView.displayTransactions(prevMonthTransaction);
+                    break;
+                case "3":
+                    List<Transaction> yearTransactions = ledgerService.getYearToDateTransactions();
+                    ledgerView.displayTransactions(yearTransactions);
+                    break;
+                case "4":
+                    List<Transaction> prevYearTransaction = ledgerService.getPreviousYearTransactions();
+                    ledgerView.displayTransactions(prevYearTransaction);
+                    break;
+                case "5":
+                    String vendor = ledgerView.promptForVendorName();
+                    List<Transaction> transactionsByVendor = ledgerService.getTransactionsByVendor(vendor);
+                    ledgerView.displayTransactions(transactionsByVendor);
+                    break;
+                case "6":
+                    System.out.println("Not implemented yet!");
+                    break;
+                case "0":
+                    return;
 
             }
         }

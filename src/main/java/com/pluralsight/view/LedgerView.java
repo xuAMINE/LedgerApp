@@ -57,7 +57,6 @@ public class LedgerView {
         System.out.println("6) Custom Search (optional bonus)");
         System.out.println("0) Back to Ledger Menu");
         System.out.println("==================================");
-        System.out.print("Please select an option: ");
     }
 
     public String promptForVendorName() {

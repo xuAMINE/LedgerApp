@@ -9,9 +9,6 @@ import com.pluralsight.view.HomeView;
 
 public class LedgerApplication {
     public static void main(String[] args) {
-        TransactionRepository repository = new CSVTransactionRepository();
-        LedgerService ledgerService = new LedgerServiceImpl(repository);
-        HomeView homeView = new HomeView();
         ScreenManager screen = new ScreenManager();
 
         // Start menu loop, handle user navigation

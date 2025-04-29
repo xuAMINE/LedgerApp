@@ -74,14 +74,6 @@ public class LedgerServiceImpl implements LedgerService {
     }
 
     @Override
-    public List<Transaction> getTransactionsByVendor(String vendor) {
-        return transactionRepository.findAll()
-                .stream()
-                .filter(t -> t.getVendor().equalsIgnoreCase(vendor))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<Transaction> getMonthToDateTransactions() {
         LocalDate today = LocalDate.now();
         LocalDate firstDayOfMonth = today.withDayOfMonth(1);
@@ -129,6 +121,14 @@ public class LedgerServiceImpl implements LedgerService {
                     LocalDate date = t.getDateTime().toLocalDate();
                     return date.isAfter(startOfYear) && date.isBefore(endOfYear);
                 })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Transaction> getTransactionsByVendor(String vendor) {
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> t.getVendor().equalsIgnoreCase(vendor))
                 .collect(Collectors.toList());
     }
 }
