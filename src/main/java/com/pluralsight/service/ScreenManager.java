@@ -8,40 +8,96 @@ import com.pluralsight.view.HomeView;
 import com.pluralsight.view.LedgerView;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ScreenManager {
     private final HomeView homeView = new HomeView();
     private final LedgerView ledgerView = new LedgerView();
     private final TransactionBuilder transactionBuilder = new TransactionBuilder();
     private final LedgerServiceImpl service = new LedgerServiceImpl(new CSVTransactionRepository());
+    private final TransactionRepository transactionRepository = new CSVTransactionRepository();
 
 
-    public void callUserChoice() {
-        System.out.print("\nPlease select an option: ");
-        String choice = homeView.getUserChoice();
-        switch (choice) {
-            case "D":
-                homeView.promptForDeposit();
-                String description = homeView.promptForDescription();
-                String vendor = homeView.promptForVendor();
-                BigDecimal amount = new BigDecimal(homeView.promptForAmount());
-                Transaction transaction = transactionBuilder.buildTransaction(description, vendor, amount);
-                service.addDeposit(transaction);
-                break;
-            case "P":
-                homeView.promptForPayment();
-                break;
-            case "L":
-                ledgerView.displayLedgerMenu();
-                break;
-            case "X":
-                System.out.println("See you soon!");
-                System.exit(0);
-            default:
-                System.err.println("Invalid choice!, please try again!");
-                callUserChoice();
+    public void handleHomeMenu() {
+        while (true) {
+            homeView.displayMenu();
+            System.out.print("\nPlease select an option: ");
+            String choice = homeView.getUserChoice();
+
+            switch (choice) {
+                case "D":
+                    homeView.promptForDeposit();
+                    String description = homeView.promptForDescription();
+                    String vendor = homeView.promptForVendor();
+                    BigDecimal amount = new BigDecimal(homeView.promptForAmount());
+                    Transaction transaction = transactionBuilder.buildTransaction(description, vendor, amount);
+                    service.addDeposit(transaction);
+                    break;
+                case "P":
+                    homeView.promptForPayment();
+                    String description1 = homeView.promptForDescription();
+                    String vendor1 = homeView.promptForVendor();
+                    BigDecimal amount1 = new BigDecimal(homeView.promptForAmount());
+                    Transaction transaction1 = transactionBuilder.buildTransaction(description1, vendor1, amount1);
+                    service.makePayment(transaction1);
+                    break;
+                case "L":
+                    handleLedgerMenu();
+                    break;
+                case "X":
+                    System.out.println("See you soon!");
+                    return;
+                default:
+                    System.err.println("Invalid choice!, please try again!");
+                    handleHomeMenu();
+            }
+        }
+
+    }
+
+    public void handleLedgerMenu() {
+        while (true) {
+            ledgerView.displayLedgerMenu();
+            System.out.print("\nPlease select an option: ");
+            String choice = ledgerView.getUserChoice();
+
+            switch (choice) {
+                case "A":
+                    List<Transaction> allTransactions = transactionRepository.findAll();
+                    ledgerView.displayTransactions(allTransactions);
+//                    ledgerView.displayBalance(service.getCurrentBalance());
+                    break;
+                case "D":
+                    List<Transaction> deposits = service.getDeposits();
+                    ledgerView.displayTransactions(deposits);
+//                    ledgerView.displayBalance(service.getCurrentBalance());
+                    break;
+                case "P":
+                    List<Transaction> payments = service.getPayments();
+                    ledgerView.displayTransactions(payments);
+//                    ledgerView.displayBalance(service.getCurrentBalance());
+                    break;
+                case "R":
+                    ledgerView.displayReportMenu();
+                    break;
+                case "H":
+                    return; // ⬅️ Return to Home Menu
+                default:
+                    System.err.println("Invalid choice!, please try again.");
+            }
         }
     }
 
+    public void handleReportMenu() {
+        while (true) {
+            ledgerView.displayReportMenu();
+            System.out.print("\nPlease select an option: ");
+            String choice = ledgerView.getUserChoice();
 
+            switch (choice) {
+                case "1":
+
+            }
+        }
+    }
 }

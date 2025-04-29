@@ -10,7 +10,7 @@ public class HomeView {
     private final LedgerView ledgerView = new LedgerView();
 
     public void displayMenu() {
-        System.out.println("==================================");
+        System.out.println("\n==================================");
         System.out.println("🏦 Accounting Ledger - Home Menu");
         System.out.println("==================================");
         System.out.println("D) Add Deposit");

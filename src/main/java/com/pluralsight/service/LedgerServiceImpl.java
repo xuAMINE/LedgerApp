@@ -4,8 +4,11 @@ import com.pluralsight.model.Transaction;
 import com.pluralsight.repository.TransactionRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LedgerServiceImpl implements LedgerService {
     private final TransactionRepository transactionRepository;
@@ -24,6 +27,7 @@ public class LedgerServiceImpl implements LedgerService {
             transaction.setDateTime(LocalDateTime.now());
 
         transactionRepository.save(transaction);
+        System.out.println("Deposited " + transaction.getAmount() + " to your account.");
     }
 
     @Override
@@ -37,6 +41,7 @@ public class LedgerServiceImpl implements LedgerService {
 
 
         transactionRepository.save(transaction);
+        System.out.println("Payment of " + transaction.getAmount() + " was successful.");
     }
 
     @Override
@@ -49,41 +54,81 @@ public class LedgerServiceImpl implements LedgerService {
 
     @Override
     public List<Transaction> getAllTransactions() {
-        return List.of();
+        return transactionRepository.findAll();
     }
 
     @Override
     public List<Transaction> getDeposits() {
-        return List.of();
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> t.getAmount().compareTo(BigDecimal.ZERO) > 0)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Transaction> getPayments() {
-        return List.of();
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> t.getAmount().compareTo(BigDecimal.ZERO) < 0)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Transaction> getTransactionsByVendor(String vendor) {
-        return List.of();
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> t.getVendor().equalsIgnoreCase(vendor))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Transaction> getMonthToDateTransactions() {
-        return List.of();
+        LocalDate today = LocalDate.now();
+        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
+
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> t.getDateTime().toLocalDate().isAfter(firstDayOfMonth))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Transaction> getPreviousMonthTransactions() {
-        return List.of();
+        LocalDate today = LocalDate.now();
+        YearMonth previousMonth = YearMonth.from(today.minusMonths(1));
+        LocalDate start = previousMonth.atDay(1);
+        LocalDate end = previousMonth.atEndOfMonth();
+
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> t.getDateTime().toLocalDate().isAfter(start)
+                          && t.getDateTime().toLocalDate().isBefore(end))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Transaction> getYearToDateTransactions() {
-        return List.of();
+        LocalDate today = LocalDate.now();
+        LocalDate startOfYear = today.withDayOfYear(1);
+
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> t.getDateTime().toLocalDate().isAfter(startOfYear))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Transaction> getPreviousYearTransactions() {
-        return List.of();
+        LocalDate today = LocalDate.now();
+        LocalDate startOfYear = today.minusYears(1).withDayOfYear(1);
+        LocalDate endOfYear = today.minusYears(1).withMonth(12).withDayOfMonth(31);
+
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> {
+                    LocalDate date = t.getDateTime().toLocalDate();
+                    return date.isAfter(startOfYear) && date.isBefore(endOfYear);
+                })
+                .collect(Collectors.toList());
     }
 }

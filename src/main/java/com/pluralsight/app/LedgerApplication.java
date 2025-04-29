@@ -1,6 +1,5 @@
 package com.pluralsight.app;
 
-import com.pluralsight.model.Transaction;
 import com.pluralsight.repository.CSVTransactionRepository;
 import com.pluralsight.repository.TransactionRepository;
 import com.pluralsight.service.LedgerService;
@@ -16,8 +15,8 @@ public class LedgerApplication {
         ScreenManager screen = new ScreenManager();
 
         // Start menu loop, handle user navigation
-        homeView.displayMenu();
-        screen.callUserChoice();
+        screen.handleHomeMenu();
+
 
 
     }

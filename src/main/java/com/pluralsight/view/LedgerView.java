@@ -21,7 +21,6 @@ public class LedgerView {
         System.out.println("R) Run Reports");
         System.out.println("H) Return Home");
         System.out.println("==================================");
-        System.out.print("Please select an option: ");
     }
 
     public String getUserChoice() {
