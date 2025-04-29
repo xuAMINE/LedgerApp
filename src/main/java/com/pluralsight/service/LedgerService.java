@@ -1,5 +1,6 @@
 package com.pluralsight.service;
 
+import com.pluralsight.model.SearchFilter;
 import com.pluralsight.model.Transaction;
 
 import java.math.BigDecimal;
@@ -28,5 +29,7 @@ public interface LedgerService {
     List<Transaction> getYearToDateTransactions();
 
     List<Transaction> getPreviousYearTransactions();
+
+    List<Transaction> search(SearchFilter filter);
 
 }

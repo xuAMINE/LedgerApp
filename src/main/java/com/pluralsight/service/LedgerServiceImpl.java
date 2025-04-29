@@ -1,5 +1,6 @@
 package com.pluralsight.service;
 
+import com.pluralsight.model.SearchFilter;
 import com.pluralsight.model.Transaction;
 import com.pluralsight.repository.TransactionRepository;
 
@@ -129,6 +130,28 @@ public class LedgerServiceImpl implements LedgerService {
         return transactionRepository.findAll()
                 .stream()
                 .filter(t -> t.getVendor().equalsIgnoreCase(vendor))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Transaction> search(SearchFilter filter) {
+        return transactionRepository.findAll()
+                .stream()
+                .filter(t -> {
+                    if (filter.getStartDate() != null && t.getDateTime().toLocalDate().isBefore(filter.getStartDate()))
+                        return false;
+
+                    if (filter.getEndDate() != null && t.getDateTime().toLocalDate().isAfter(filter.getEndDate()))
+                        return false;
+
+                    if (filter.getDescription() != null && !t.getDescription().isBlank() && !t.getDescription().toLowerCase().contains(filter.getDescription().toLowerCase()))
+                        return false;
+
+                    if (filter.getAmount() != null && t.getAmount().compareTo(filter.getAmount()) != 0)
+                        return false;
+
+                    return true;
+                })
                 .collect(Collectors.toList());
     }
 }
