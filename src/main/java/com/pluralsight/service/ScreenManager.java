@@ -1,5 +1,6 @@
 package com.pluralsight.service;
 
+import com.pluralsight.model.SearchFilter;
 import com.pluralsight.model.Transaction;
 import com.pluralsight.repository.CSVTransactionRepository;
 import com.pluralsight.repository.TransactionRepository;
@@ -10,12 +11,16 @@ import com.pluralsight.view.LedgerView;
 import java.math.BigDecimal;
 import java.util.List;
 
+
 public class ScreenManager {
     private final HomeView homeView = new HomeView();
     private final LedgerView ledgerView = new LedgerView();
     private final TransactionBuilder transactionBuilder = new TransactionBuilder();
     private final LedgerServiceImpl ledgerService = new LedgerServiceImpl(new CSVTransactionRepository());
     private final TransactionRepository transactionRepository = new CSVTransactionRepository();
+    String RESET = "\u001B[0m";
+    String BOLD = "\u001B[1m";
+    String YELLOW = "\u001B[33m";
 
 
     public void handleHomeMenu() {
@@ -29,17 +34,19 @@ public class ScreenManager {
                     homeView.promptForDeposit();
                     String description = homeView.promptForDescription();
                     String vendor = homeView.promptForVendor();
-                    BigDecimal amount = new BigDecimal(homeView.promptForAmount());
+                    BigDecimal amount = homeView.promptForAmount();
                     Transaction transaction = transactionBuilder.buildTransaction(description, vendor, amount);
                     ledgerService.addDeposit(transaction);
+                    System.out.println("Your balance is: " + BOLD + YELLOW + ledgerService.getBalance() + RESET);
                     break;
                 case "P":
                     homeView.promptForPayment();
                     String description1 = homeView.promptForDescription();
                     String vendor1 = homeView.promptForVendor();
-                    BigDecimal amount1 = new BigDecimal(homeView.promptForAmount());
+                    BigDecimal amount1 = homeView.promptForAmount();
                     Transaction transaction1 = transactionBuilder.buildTransaction(description1, vendor1, amount1);
                     ledgerService.makePayment(transaction1);
+                    System.out.println("Your balance is: " + ledgerService.getBalance());
                     break;
                 case "L":
                     handleLedgerMenu();
@@ -48,8 +55,7 @@ public class ScreenManager {
                     System.out.println("See you soon!");
                     return;
                 default:
-                    System.err.println("Invalid choice!, please try again!");
-                    handleHomeMenu();
+                    System.err.println("❗ Invalid choice. Please try again.");
             }
         }
 
@@ -65,25 +71,26 @@ public class ScreenManager {
                 case "A":
                     List<Transaction> allTransactions = transactionRepository.findAll();
                     ledgerView.displayTransactions(allTransactions);
-//                    ledgerView.displayBalance(service.getCurrentBalance());
+                    System.out.println("Your balance is: " + ledgerService.getBalance());
                     break;
                 case "D":
                     List<Transaction> deposits = ledgerService.getDeposits();
                     ledgerView.displayTransactions(deposits);
-//                    ledgerView.displayBalance(service.getCurrentBalance());
+                    System.out.println("Your balance is: " + ledgerService.getBalance());
                     break;
                 case "P":
                     List<Transaction> payments = ledgerService.getPayments();
                     ledgerView.displayTransactions(payments);
-//                    ledgerView.displayBalance(service.getCurrentBalance());
+                    System.out.println("Your balance is: " + ledgerService.getBalance());
                     break;
                 case "R":
                     handleReportMenu();
                     break;
                 case "H":
+                    System.out.println("↩ Returning to previous menu...");
                     return; // ⬅️ Return to Home Menu
                 default:
-                    System.err.println("Invalid choice!, please try again.");
+                    System.err.println("❗ Invalid choice. Please try again.");
             }
         }
     }
@@ -117,11 +124,15 @@ public class ScreenManager {
                     ledgerView.displayTransactions(transactionsByVendor);
                     break;
                 case "6":
-                    System.out.println("Not implemented yet!");
+                    SearchFilter searchFilter = ledgerView.promptForSearchFilter();
+                    List<Transaction> filteredTransactions = ledgerService.search(searchFilter);
+                    ledgerView.displayTransactions(filteredTransactions);
                     break;
                 case "0":
+                    System.out.println("↩ Returning to previous menu...");
                     return;
-
+                default:
+                    System.err.println("❗ Invalid choice. Please try again.");
             }
         }
     }

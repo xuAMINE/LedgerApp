@@ -1,9 +1,13 @@
 package com.pluralsight.view;
 
+import com.pluralsight.model.SearchFilter;
 import com.pluralsight.model.Transaction;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -62,5 +66,52 @@ public class LedgerView {
     public String promptForVendorName() {
         System.out.print("Enter Vendor Name to Search: ");
         return sc.nextLine();
+    }
+
+    public SearchFilter promptForSearchFilter() {
+        SearchFilter searchFilter = new SearchFilter();
+
+        System.out.print("\nStart Date (yyyy-MM-dd) [optional]: ");
+        String start = sc.nextLine();
+        try {
+            if (!start.isBlank())
+                searchFilter.setStartDate(LocalDate.parse(start));
+        } catch (DateTimeParseException e) {
+            System.err.println("❌ Invalid date format. Use yyyy-MM-dd.");
+            return promptForSearchFilter();
+        }
+
+        System.out.print("End Date (yyyy-MM-dd) [optional]: ");
+        String end = sc.nextLine();
+        try {
+            if (!end.isBlank())
+                searchFilter.setEndDate(LocalDate.parse(end));
+        } catch (DateTimeParseException e) {
+            System.err.println ("❌ Invalid date format. Use yyyy-MM-dd.");
+            return promptForSearchFilter();
+        }
+
+        System.out.print("Description [optional]: ");
+        String description = sc.nextLine();
+        if (!description.isBlank())
+            searchFilter.setDescription(description);
+
+        System.out.print("Vendor [optional]: ");
+        String vendor = sc.nextLine();
+        if (!vendor.isBlank())
+            searchFilter.setVendor(vendor);
+
+        System.out.print("Amount (e.g. 100.00) [optional]: ");
+        String amountStr = sc.nextLine();
+        try {
+            if (!amountStr.isBlank())
+                searchFilter.setAmount(new BigDecimal(amountStr));
+        } catch (NumberFormatException e) {
+            System.err.println("❌ Invalid amount format. Please enter a valid number.");
+            return promptForSearchFilter();
+        }
+
+
+        return searchFilter;
     }
 }

@@ -29,7 +29,7 @@ public class HomeView {
     }
 
     public void promptForPayment() {
-        System.out.println("\nEnter payment information:");
+        System.out.println("\n# Enter payment information");
     }
 
     public String promptForDescription() {
@@ -42,9 +42,19 @@ public class HomeView {
         return sc.nextLine();
     }
 
-    public String promptForAmount() {
-        System.out.print("Enter Amount: ");
-        return sc.nextLine();
+    public BigDecimal promptForAmount() {
+        while (true) {
+            System.out.print("Enter Amount: ");
+            String input = sc.nextLine().trim();
+
+            try {
+                return new BigDecimal(input);
+            } catch (NumberFormatException e) {
+                System.err.println("❌ Invalid amount. Please enter a valid number.");
+                System.out.println();
+
+            }
+        }
     }
 
 

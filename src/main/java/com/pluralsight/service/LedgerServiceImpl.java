@@ -147,10 +147,10 @@ public class LedgerServiceImpl implements LedgerService {
                     if (filter.getDescription() != null && !t.getDescription().isBlank() && !t.getDescription().toLowerCase().contains(filter.getDescription().toLowerCase()))
                         return false;
 
-                    if (filter.getAmount() != null && t.getAmount().compareTo(filter.getAmount()) != 0)
+                    if (filter.getVendor() != null && !t.getVendor().isBlank() && !t.getVendor().toLowerCase().contains(filter.getVendor().toLowerCase()))
                         return false;
 
-                    return true;
+                    return filter.getAmount() == null || t.getAmount().compareTo(filter.getAmount()) == 0;
                 })
                 .collect(Collectors.toList());
     }
