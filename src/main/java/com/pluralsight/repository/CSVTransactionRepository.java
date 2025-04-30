@@ -1,7 +1,7 @@
 package com.pluralsight.repository;
 
 import com.pluralsight.model.Transaction;
-import com.pluralsight.util.DateUtils;
+import com.pluralsight.util.ParseUtils;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -50,7 +50,7 @@ public class CSVTransactionRepository implements TransactionRepository {
 
     private String formatTransaction(Transaction transaction) {
         return String.format("%s|%s|%s|%s",
-                DateUtils.format(transaction.getDateTime()),
+                ParseUtils.format(transaction.getDateTime()),
                 transaction.getDescription().replace("|", ""),
                 transaction.getVendor().replace("|", ""),
                 transaction.getAmount().setScale(2, RoundingMode.HALF_UP).toPlainString()
@@ -63,7 +63,7 @@ public class CSVTransactionRepository implements TransactionRepository {
             if (parts.length != 5)
                 return null;
 
-            LocalDateTime dateTime = DateUtils.parse(parts[0] + "|" + parts[1]); // date|time together
+            LocalDateTime dateTime = ParseUtils.parse(parts[0] + "|" + parts[1]); // date|time together
             String description = parts[2];
             String vendor = parts[3];
             BigDecimal amount = new BigDecimal(parts[4]);

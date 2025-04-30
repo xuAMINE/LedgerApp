@@ -4,12 +4,15 @@ import com.pluralsight.model.SearchFilter;
 import com.pluralsight.model.Transaction;
 import com.pluralsight.repository.CSVTransactionRepository;
 import com.pluralsight.repository.TransactionRepository;
+import com.pluralsight.util.ParseUtils;
 import com.pluralsight.util.TransactionBuilder;
 import com.pluralsight.view.HomeView;
 import com.pluralsight.view.LedgerView;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import static com.pluralsight.util.ParseUtils.boldYellow;
 
 
 public class ScreenManager {
@@ -18,10 +21,6 @@ public class ScreenManager {
     private final TransactionBuilder transactionBuilder = new TransactionBuilder();
     private final LedgerServiceImpl ledgerService = new LedgerServiceImpl(new CSVTransactionRepository());
     private final TransactionRepository transactionRepository = new CSVTransactionRepository();
-    String RESET = "\u001B[0m";
-    String BOLD = "\u001B[1m";
-    String YELLOW = "\u001B[33m";
-
 
     public void handleHomeMenu() {
         while (true) {
@@ -37,7 +36,7 @@ public class ScreenManager {
                     BigDecimal amount = homeView.promptForAmount();
                     Transaction transaction = transactionBuilder.buildTransaction(description, vendor, amount);
                     ledgerService.addDeposit(transaction);
-                    System.out.println("Your balance is: " + BOLD + YELLOW + ledgerService.getBalance() + RESET);
+                    System.out.println("Your balance is: " + boldYellow(ledgerService.getBalance()));
                     break;
                 case "P":
                     homeView.promptForPayment();
@@ -46,7 +45,7 @@ public class ScreenManager {
                     BigDecimal amount1 = homeView.promptForAmount();
                     Transaction transaction1 = transactionBuilder.buildTransaction(description1, vendor1, amount1);
                     ledgerService.makePayment(transaction1);
-                    System.out.println("Your balance is: " + ledgerService.getBalance());
+                    System.out.println("Your balance is: " + boldYellow(ledgerService.getBalance()));
                     break;
                 case "L":
                     handleLedgerMenu();
@@ -71,17 +70,17 @@ public class ScreenManager {
                 case "A":
                     List<Transaction> allTransactions = transactionRepository.findAll();
                     ledgerView.displayTransactions(allTransactions);
-                    System.out.println("Your balance is: " + ledgerService.getBalance());
+                    System.out.println("Your balance is: " + boldYellow(ledgerService.getBalance()));
                     break;
                 case "D":
                     List<Transaction> deposits = ledgerService.getDeposits();
                     ledgerView.displayTransactions(deposits);
-                    System.out.println("Your balance is: " + ledgerService.getBalance());
+                    System.out.println("Your balance is: " + boldYellow(ledgerService.getBalance()));
                     break;
                 case "P":
                     List<Transaction> payments = ledgerService.getPayments();
                     ledgerView.displayTransactions(payments);
-                    System.out.println("Your balance is: " + ledgerService.getBalance());
+                    System.out.println("Your balance is: " + boldYellow(ledgerService.getBalance()));
                     break;
                 case "R":
                     handleReportMenu();

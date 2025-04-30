@@ -1,7 +1,6 @@
 package com.pluralsight.model;
 
-import com.pluralsight.app.LedgerApplication;
-import com.pluralsight.util.DateUtils;
+import com.pluralsight.util.ParseUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -57,7 +56,7 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "dateTime=" + DateUtils.format(dateTime) +
+                "dateTime=" + ParseUtils.format(dateTime) +
                 ", description='" + description + '\'' +
                 ", vendor='" + vendor + '\'' +
                 ", amount=" + amount +
